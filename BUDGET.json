@@ -1,0 +1,36 @@
+{
+  "currency": "EUR",
+  "hard_cap": 100.0,
+  "policy": {
+    "excluded_from_cap": "Abbonamenti fissi già pagati dal titolare (Claude/Claude Code, GitHub). Nessun nuovo abbonamento attivato.",
+    "no_auto_renewal": true,
+    "revenue_does_not_refill_budget": true,
+    "only_coordinator_authorizes_spend": true
+  },
+  "allocation_plan": {
+    "infra_domain": 15.0,
+    "assets_api": 15.0,
+    "acquisition": 50.0,
+    "reserve": 20.0
+  },
+  "spent": [],
+  "commitments": [],
+  "totals": {
+    "spent_eur": 0.0,
+    "open_commitments_eur": 0.0,
+    "max_exposure_eur": 0.0,
+    "remaining_eur": 100.0
+  },
+  "log": [
+    {
+      "ts": "2026-09-12T08:00:00Z",
+      "event": "budget_opened",
+      "note": "Nessuna spesa sostenuta. Cap 100 EUR."
+    },
+    {
+      "ts": "2026-09-12T08:06:00Z",
+      "event": "clock_corrected",
+      "note": "Ora reale verificata su fonti di rete: scadenza fissata a 2026-09-12T16:00:00Z. Nessun impatto sulla spesa."
+    }
+  ]
+}

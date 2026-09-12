@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<title>NERVE — hold your nerve, release in the gold</title>
+<meta name="description" content="A one-thumb arcade game. Hold to charge, release in the gold. The ring gets faster, the gold gets thinner. Three cracks and you're out. New daily run every day.">
+<meta name="theme-color" content="#0A0C11">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<meta property="og:title" content="NERVE — hold your nerve, release in the gold">
+<meta property="og:description" content="One thumb. Sixty seconds. The gold gets thinner every time.">
+<meta property="og:type" content="website">
+</head>
+<body>
+<div id="app">
+
+  <header id="hud" aria-hidden="true">
+    <div class="hud-side">
+      <div class="label">SCORE</div>
+      <div id="score" class="num">0</div>
+    </div>
+    <div id="cracks" class="cracks" title="Cracks">
+      <span class="crack"></span><span class="crack"></span><span class="crack"></span>
+    </div>
+    <div class="hud-side right">
+      <div class="label">CHAIN</div>
+      <div id="chain" class="num">&times;1</div>
+    </div>
+  </header>
+
+  <canvas id="stage"></canvas>
+
+  <div id="prompt" class="prompt"></div>
+
+  <!-- TITOLO -->
+  <section id="screen-title" class="screen">
+    <div class="stack">
+      <h1 class="wordmark">NERVE</h1>
+      <p class="tagline">Hold to charge. Release in the gold.</p>
+      <button id="btn-daily" class="btn btn-primary">
+        <span class="btn-main">Play daily run</span>
+        <span class="btn-sub" id="daily-label">Run #1</span>
+      </button>
+      <button id="btn-endless" class="btn btn-ghost">Endless</button>
+      <div class="title-foot">
+        <button id="btn-sound" class="linklike" aria-pressed="true">Sound: on</button>
+        <span class="dot">&middot;</span>
+        <button id="btn-how" class="linklike">How to play</button>
+      </div>
+      <p id="best-line" class="best-line"></p>
+    </div>
+  </section>
+
+  <!-- COME SI GIOCA -->
+  <section id="screen-how" class="screen" hidden>
+    <div class="stack narrow">
+      <h2>How to play</h2>
+      <ol class="how">
+        <li><b>Hold</b> anywhere. The ring charges.</li>
+        <li><b>Release in the green</b> to bank it safely.</li>
+        <li><b>Release in the gold</b> for triple, and your chain grows.</li>
+        <li><b>Hold into the red</b> and it overloads. That's a crack.</li>
+      </ol>
+      <p class="fineprint">Three cracks and the run ends. Every bank makes the ring faster and the gold thinner. Banking green is safe — but it resets your chain.</p>
+      <button id="btn-how-back" class="btn btn-primary"><span class="btn-main">Got it</span></button>
+    </div>
+  </section>
+
+  <!-- FINE PARTITA -->
+  <section id="screen-over" class="screen" hidden>
+    <div class="stack">
+      <div class="over-head">
+        <div id="over-mode" class="label">DAILY RUN #1</div>
+        <div id="over-score" class="final-num">0</div>
+        <div id="over-verdict" class="verdict"></div>
+      </div>
+      <div id="over-tape" class="tape" aria-label="Your run"></div>
+      <div class="over-stats">
+        <div><span class="label">BEST CHAIN</span><b id="stat-chain">&times;1</b></div>
+        <div><span class="label">GOLDS</span><b id="stat-golds">0</b></div>
+        <div><span class="label">BEST EVER</span><b id="stat-best">0</b></div>
+      </div>
+      <button id="btn-again" class="btn btn-primary"><span class="btn-main">Again</span></button>
+      <button id="btn-share" class="btn btn-ghost">Share result</button>
+      <button id="btn-home" class="linklike">Back</button>
+    </div>
+  </section>
+
+  <footer id="legal">
+    <a href="privacy.html">Privacy</a>
+  </footer>
+</div>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
