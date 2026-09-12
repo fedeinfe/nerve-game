@@ -38,7 +38,7 @@ Then open http://localhost:4321.
 node --test test/game.test.mjs
 ```
 
-13 tests covering the scoring rules, the zone boundaries, the chain, the crack/game-over
+21 tests covering the scoring rules, the zone boundaries, the chain, the crack/game-over
 flow, frame-independent timing, and the daily seed.
 
 Two analysis scripts, not tests:
@@ -84,7 +84,6 @@ src/loop.js       fixed-timestep loop, canvas fitting
 src/rng.js        seeded PRNG, daily key
 src/storage.js    localStorage with a memory fallback
 src/audio.js      WebAudio synthesis — no audio files
-src/analytics.js  aggregate event counters, dev traffic flagged
 src/ads.js        ad slot abstraction — currently OFF
 ```
 

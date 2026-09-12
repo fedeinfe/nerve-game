@@ -24,24 +24,28 @@
   <p>NERVE runs entirely in your browser. There are no accounts, no sign-up, and no cookies. Nothing you do here is sent to a server owned by this game.</p>
 
   <h2>What is stored on your device</h2>
-  <p>The game saves a few values in your browser's <code>localStorage</code>, on your device only:</p>
+  <p>The game saves five values in your browser's <code>localStorage</code>, on your device only. This is the complete list:</p>
   <ul>
-    <li>your best score for today's daily run, and your best score ever;</li>
-    <li>whether you turned sound on or off.</li>
+    <li><code>nerve.best.daily</code> — today's date and your best score on today's daily run. It is overwritten when a new day starts, so no history of which days you played is kept;</li>
+    <li><code>nerve.best.endless</code> — your best endless score;</li>
+    <li><code>nerve.best.alltime</code> — your best score across both modes;</li>
+    <li><code>nerve.coached</code> — whether you have already seen the first-run hints;</li>
+    <li><code>nerve.sound</code> — whether you turned sound on or off.</li>
   </ul>
-  <p>This data never leaves your device and is not readable by us. Clearing your browser's site data removes it. If your browser blocks storage, the game still works — it just won't remember your best score.</p>
+  <p>No identifier, no name, no date of birth, no location. These values are never sent anywhere: the game has no server and makes no network request of its own after the page has loaded.</p>
+  <p>One honest caveat about the address this game is published at. <code>localStorage</code> is shared by every page on the same origin, and <code>fedeinfe.github.io</code> also hosts other projects by the same developer. Any page on that domain can technically read these five values, and a page on a different domain cannot. Nothing on this domain does read them — but a promise that they are unreadable would be a promise the browser does not make, so we do not make it. Clearing your browser's site data removes them. If your browser blocks storage, the game still works; it just will not remember your best score.</p>
 
   <h2>Advertising</h2>
   <p><b>No advertising is served on this site at the time of writing.</b> No ad network SDK is loaded and no advertising or tracking script runs. If advertising is added in the future, this page will be updated before it goes live, and any consent required in your region will be requested before any tracking takes place.</p>
 
   <h2>Analytics</h2>
-  <p>The game may count aggregate, anonymous events such as "a run was started" or "a run ended". These counts contain no identifier for you, no cookie, no IP-based profile and no cross-site tracking, and cannot be linked back to an individual.</p>
+  <p><b>There are none.</b> The game measures nothing and counts nothing — not page views, not runs played, not scores. An earlier draft of this project contained an unused analytics module; it was deleted rather than left dormant, so there is no code here waiting to be switched on. This means the developer genuinely does not know whether you played, and that is the intended state. If analytics are ever added, this page will say so before they run, and any consent required in your region will be asked for first.</p>
 
   <h2>Hosting</h2>
   <p>This site is served as static files by GitHub Pages. Like any web host, GitHub processes connection data (such as IP address) in order to deliver the page. See <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>.</p>
 
   <h2>Fonts</h2>
-  <p>The typeface is loaded from Google Fonts, which means your browser requests a file from <code>fonts.gstatic.com</code>. See <a href="https://developers.google.com/fonts/faq/privacy">Google Fonts' privacy note</a>.</p>
+  <p>The typeface is loaded from Google Fonts. Both this page and the game request a stylesheet from <code>fonts.googleapis.com</code> and the font file itself from <code>fonts.gstatic.com</code>, so Google receives the connection data any web request carries, including your IP address. These are the only third-party requests either page makes. See <a href="https://developers.google.com/fonts/faq/privacy">Google Fonts' privacy note</a>.</p>
 
   <h2>Children</h2>
   <p>The game is suitable for a general audience, collects no personal data and is not directed at children under 13 for the purposes of data collection.</p>

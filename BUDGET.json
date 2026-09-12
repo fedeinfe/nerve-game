@@ -8,10 +8,10 @@
     "only_coordinator_authorizes_spend": true
   },
   "allocation_plan": {
-    "infra_domain": 15.0,
-    "assets_api": 15.0,
-    "acquisition": 50.0,
-    "reserve": 20.0
+    "infra_domain": 0.0,
+    "assets_api": 0.0,
+    "acquisition": 0.0,
+    "reserve": 100.0
   },
   "spent": [],
   "commitments": [],
@@ -31,6 +31,17 @@
       "ts": "2026-09-12T08:06:00Z",
       "event": "clock_corrected",
       "note": "Ora reale verificata su fonti di rete: scadenza fissata a 2026-09-12T16:00:00Z. Nessun impatto sulla spesa."
+    },
+    {
+      "ts": "2026-09-12T10:05:00Z",
+      "event": "allocation_revised",
+      "note": "Voci dominio/asset/acquisizione portate a 0. Tutto in riserva non spesa."
+    },
+    {
+      "ts": "2026-09-12T10:05:00Z",
+      "event": "no_purchase_authorized",
+      "note": "Nessun acquisto effettuato, nessun abbonamento attivato, nessun rinnovo automatico, nessuna campagna pubblicitaria avviata. Esposizione massima aperta: 0,00 EUR."
     }
-  ]
+  ],
+  "reallocation_rationale": "Ripartizione iniziale (15/15/50/20) riallocata a 0/0/0/100 senza aumentare il totale. Motivo: con ricavo atteso 0,00 EUR in ogni ramo, il profitto e' esattamente meno la spesa, e nessuna voce disponibile oggi ha rendimento atteso positivo dentro la finestra. Acquisizione: TikTok impone 50 USD/giorno minimo per campagna; Reddit e Meta richiedono carta valida piu' review dell'account. Dominio: mitiga un rischio ToS che sparisce non montando annunci. Asset: grafica generata in codice, audio sintetizzato, zero file di terzi. Vedi DECISIONS.md D8."
 }

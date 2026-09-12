@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>NERVE — hold your nerve, release in the gold</title>
-<meta name="description" content="A one-thumb arcade game. Hold to charge, release in the gold. The ring gets faster, the gold gets thinner. Three cracks and you're out. Every day brings a different modifier.">
+<meta name="description" content="A one-thumb arcade game. Hold to charge, release in the gold. The ring gets faster, the gold gets thinner. Three cracks and you're out. The daily modifier changes the ring.">
 <meta name="theme-color" content="#0A0C11">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
 <body>
 <div id="app">
 
-  <header id="hud" aria-hidden="true">
+  <header id="hud" role="group" aria-label="Run status">
     <div class="hud-side">
       <div class="label">SCORE</div>
       <div id="score" class="num">0</div>
@@ -51,6 +51,8 @@
         <button id="btn-sound" class="linklike" aria-pressed="true">Sound: on</button>
         <span class="dot">&middot;</span>
         <button id="btn-how" class="linklike">How to play</button>
+        <span class="dot">&middot;</span>
+        <a class="linklike" href="privacy.html">Privacy</a>
       </div>
       <p id="best-line" class="best-line"></p>
     </div>
@@ -62,11 +64,12 @@
       <h2>How to play</h2>
       <ol class="how">
         <li><b>Hold</b> anywhere. The ring charges.</li>
-        <li><b>Release in the green</b> to bank it safely.</li>
-        <li><b>Release in the gold</b> for triple, and your chain grows.</li>
-        <li><b>Hold into the red</b> and it overloads. That's a crack.</li>
+        <li><b>Release in the gold</b> to grow the pot. Your chain grows with it.</li>
+        <li><b>Release in the green</b> to bank the pot. The chain resets to one.</li>
+        <li><b>Let go too early</b>, before the green, and the charge fizzles. That's a crack.</li>
+        <li><b>Hold into the red</b> and it overloads. That's a crack too.</li>
       </ol>
-      <p class="fineprint">Three cracks and the run ends. Every bank makes the ring faster and the gold thinner. Banking green is safe — but it resets your chain.</p>
+      <p class="fineprint">The ring has one safe span, marked by the two white ticks. Miss it below or above and you crack — three cracks end the run. Every round the ring turns faster and the span narrows, so the pot you are carrying is worth more and harder to keep.</p>
       <button id="btn-how-back" class="btn btn-primary"><span class="btn-main">Got it</span></button>
     </div>
   </section>
@@ -79,10 +82,10 @@
         <div id="over-score" class="final-num">0</div>
         <div id="over-verdict" class="verdict"></div>
       </div>
-      <div id="over-tape" class="tape" aria-label="Your run"></div>
+      <div id="over-tape" class="tape" role="img" aria-label="Your run"></div>
       <div class="over-stats">
         <div><span class="label">BEST CHAIN</span><b id="stat-chain">&times;1</b></div>
-        <div><span class="label">GOLDS</span><b id="stat-golds">0</b></div>
+        <div><span class="label">BEST BANK</span><b id="stat-bank">0</b></div>
         <div><span class="label">BEST EVER</span><b id="stat-best">0</b></div>
       </div>
       <button id="btn-again" class="btn btn-primary"><span class="btn-main">Again</span></button>
@@ -90,10 +93,6 @@
       <button id="btn-home" class="linklike">Back</button>
     </div>
   </section>
-
-  <footer id="legal">
-    <a href="privacy.html">Privacy</a>
-  </footer>
 </div>
 <script type="module" src="src/main.js"></script>
 </body>

@@ -3,9 +3,11 @@
 :root {
   --bg: #0A0C11;
   --bg-2: #10141C;
-  --line: #1E2430;
+  --line: #262D3A;
+  --edge: #6B7280;
+  --warn: #FF8A3D;
   --ink: #F3F0EA;
-  --dim: #767E8F;
+  --dim: #8A93A3;
   --safe: #35D0A5;
   --gold: #FFC24B;
   --danger: #FF4D5E;
@@ -113,8 +115,9 @@ body.playing #hud { opacity: 1; }
 .screen {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
+  display: flex;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: calc(env(safe-area-inset-top, 0px) + 24px) 24px calc(env(safe-area-inset-bottom, 0px) + 24px);
   background: linear-gradient(180deg, rgba(10,12,17,.72), rgba(10,12,17,.94) 45%);
   backdrop-filter: blur(7px);
@@ -131,6 +134,7 @@ body.playing #hud { opacity: 1; }
   align-items: center;
   gap: 14px;
   width: min(360px, 100%);
+  margin: auto;
   text-align: center;
 }
 .stack.narrow { gap: 18px; }
@@ -155,7 +159,7 @@ h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: .04em; }
 .btn {
   appearance: none;
   width: 100%;
-  border: 1px solid var(--line);
+  border: 1px solid var(--edge);
   background: var(--bg-2);
   color: var(--ink);
   border-radius: var(--radius);
@@ -188,11 +192,13 @@ h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: .04em; }
   font: inherit;
   font-size: 13px;
   cursor: pointer;
-  padding: 6px 4px;
+  min-height: 44px;
+  padding: 12px 10px;
 }
 .linklike:active { color: var(--ink); }
+a.linklike { text-decoration: none; display: inline-flex; align-items: center; }
 
-.title-foot { display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+.title-foot { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px; margin-top: 2px; }
 .dot { color: var(--line); }
 .best-line { margin: 2px 0 0; font-size: 12px; letter-spacing: .12em; color: var(--dim); min-height: 16px; }
 
@@ -215,14 +221,16 @@ h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: .04em; }
   margin: 6px 0 2px;
 }
 .tape i {
-  width: 11px; height: 11px;
-  border-radius: 3px;
+  width: 12px; height: 12px;
   display: block;
-  opacity: .9;
+  opacity: .92;
 }
-.tape i.g { background: var(--gold); }
-.tape i.s { background: var(--safe); }
-.tape i.x { background: var(--danger); }
+/* Ogni esito ha una forma propria: oro e verde coincidono a 1.01:1 in protanopia,
+   quindi il nastro deve restare leggibile anche stampato in bianco e nero. */
+.tape i.g { background: var(--gold); border-radius: 50%; }
+.tape i.s { background: none; border: 2px solid var(--safe); border-radius: 50%; }
+.tape i.x { background: var(--danger); border-radius: 2px; }
+.tape i.f { background: none; border-bottom: 3px solid var(--warn); border-radius: 0; height: 12px; }
 
 .over-stats {
   display: flex;
@@ -237,22 +245,6 @@ h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: .04em; }
 .over-stats > div { display: flex; flex-direction: column; gap: 4px; align-items: center; flex: 1; }
 .over-stats b { font-size: 18px; font-weight: 700; }
 
-#legal {
-  position: absolute;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
-  left: 0; right: 0;
-  text-align: center;
-  z-index: 5;
-  pointer-events: none;
-}
-#legal a {
-  color: #333A47;
-  font-size: 11px;
-  letter-spacing: .1em;
-  text-decoration: none;
-  pointer-events: auto;
-}
-body.playing #legal { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .01ms !important; transition-duration: .01ms !important; }

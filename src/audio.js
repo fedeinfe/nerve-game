@@ -3,7 +3,7 @@ import { load, save } from './storage.js';
 
 let ctx = null;
 let master = null;
-let enabled = load('cx.sound', true);
+let enabled = load('nerve.sound', true);
 
 function ensure() {
   if (ctx) return ctx;
@@ -29,7 +29,7 @@ export function unlock() {
 export const isEnabled = () => enabled;
 export function setEnabled(v) {
   enabled = v;
-  save('cx.sound', v);
+  save('nerve.sound', v);
   if (v) unlock();
 }
 

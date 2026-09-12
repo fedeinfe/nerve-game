@@ -13,6 +13,8 @@ const C = {
 // La corsa parte dall'alto e gira in senso orario.
 const START = -Math.PI / 2;
 
+const REDUCED = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 export function createRenderer(canvas) {
   const ctx = canvas.getContext('2d', { alpha: true });
   const particles = [];
@@ -35,6 +37,7 @@ export function createRenderer(canvas) {
   }
 
   function impact(kind, cx, cy, r) {
+    if (REDUCED) { if (kind === 'gold') flash = { c: C.gold, a: 0.12 }; else if (kind === 'overload') flash = { c: C.danger, a: 0.2 }; return; }
     if (kind === 'gold') { shake = 7; flash = { c: C.gold, a: 0.16 }; burst('gold', 26, cx, cy, r); }
     else if (kind === 'safe') { shake = 2.5; burst('safe', 10, cx, cy, r); }
     else if (kind === 'overload') { shake = 16; flash = { c: C.danger, a: 0.3 }; burst('overload', 34, cx, cy, r); }
@@ -81,14 +84,19 @@ export function createRenderer(canvas) {
     ctx.stroke();
 
     if (spec) {
-      // Bande: verde (banca sicura), oro (triplo), rosso (il muro).
-      arc(cx, cy, R, spec.safeStart, spec.goldStart, 'rgba(53,208,165,.30)', LW);
-      arc(cx, cy, R, spec.goldStart, spec.goldEnd, 'rgba(255,194,75,.50)', LW);
+      // C'è UNA campata sicura: [safeStart, goldEnd]. Fuori da lì, sotto o sopra, si crepa.
+      // Entrambi i lati vanno disegnati come pericolo, o la regola resta invisibile.
+      arc(cx, cy, R, 0, spec.safeStart, 'rgba(255,77,94,.28)', LW);
+      arc(cx, cy, R, spec.safeStart, spec.goldStart, 'rgba(53,208,165,.32)', LW);
+      arc(cx, cy, R, spec.goldStart, spec.goldEnd, 'rgba(255,194,75,.52)', LW);
       arc(cx, cy, R, spec.goldEnd, Math.min(1, spec.goldEnd + 0.09), 'rgba(255,77,94,.55)', LW);
 
-      // Tacche di confine: rendono leggibile l'inizio dell'oro a colpo d'occhio.
-      tick(cx, cy, R, LW, spec.goldStart, 'rgba(255,194,75,.9)');
-      tick(cx, cy, R, LW, spec.goldEnd, 'rgba(255,77,94,.95)');
+      // Tacche di confine: la campata sicura deve leggersi a colpo d'occhio, e i due
+      // estremi devono distinguersi senza dipendere dal colore (rosso/verde sono
+      // indistinguibili in protanopia): quella d'ingresso è doppia, quella del muro è piena.
+      tick(cx, cy, R, LW, spec.safeStart, 'rgba(243,240,234,.85)', 2);
+      tick(cx, cy, R, LW, spec.goldStart, 'rgba(255,194,75,.95)');
+      tick(cx, cy, R, LW, spec.goldEnd, 'rgba(255,255,255,.95)', 3);
 
       if (s.holding && s.charge > 0) {
         const c = Math.min(s.charge, spec.goldEnd);
@@ -148,14 +156,20 @@ export function createRenderer(canvas) {
     }
   }
 
-  function tick(cx, cy, R, LW, at, color) {
-    const a = START + at * TAU;
-    ctx.beginPath();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
-    ctx.moveTo(cx + Math.cos(a) * (R - LW * 0.72), cy + Math.sin(a) * (R - LW * 0.72));
-    ctx.lineTo(cx + Math.cos(a) * (R + LW * 0.72), cy + Math.sin(a) * (R + LW * 0.72));
-    ctx.stroke();
+  // kind: 1 tacca singola · 2 tacca doppia (ingresso della campata) · 3 barra piena (il muro)
+  function tick(cx, cy, R, LW, at, color, kind = 1) {
+    const draw = (off, w) => {
+      const a = START + (at + off) * TAU;
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = w;
+      ctx.moveTo(cx + Math.cos(a) * (R - LW * 0.75), cy + Math.sin(a) * (R - LW * 0.75));
+      ctx.lineTo(cx + Math.cos(a) * (R + LW * 0.75), cy + Math.sin(a) * (R + LW * 0.75));
+      ctx.stroke();
+    };
+    if (kind === 3) { draw(0, 5); return; }
+    if (kind === 2) { draw(-0.006, 2); draw(0.006, 2); return; }
+    draw(0, 2);
   }
 
   return { draw, impact };

@@ -6,7 +6,7 @@ export function createLoop({ update, render, step = 1 / 60 }) {
   let running = false;
 
   function frame(now) {
-    if (!running) return;
+    if (!running) { raf = 0; return; }
     // Il ritorno da una scheda in background produce un delta enorme: va scartato,
     // altrimenti il gioco "salta" avanti di secondi in un frame.
     let dt = (now - last) / 1000;
@@ -33,6 +33,10 @@ export function createLoop({ update, render, step = 1 / 60 }) {
     stop() {
       running = false;
       cancelAnimationFrame(raf);
+      // frame() riaccoda PRIMA che update() possa chiamare stop(), quindi dopo il
+      // cancelAnimationFrame sopra può restare un frame vivo: azzerare l'id impedisce
+      // che un successivo start() ne accodi un secondo e raddoppi il ciclo.
+      raf = 0;
     },
     get running() {
       return running;
