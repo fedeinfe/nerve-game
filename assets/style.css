@@ -257,3 +257,12 @@ body.playing #legal { display: none; }
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+.daily-blurb {
+  margin: -6px 0 2px;
+  font-size: 12px;
+  letter-spacing: .1em;
+  color: var(--gold);
+  opacity: .78;
+  min-height: 15px;
+}

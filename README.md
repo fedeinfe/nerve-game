@@ -14,8 +14,13 @@ overloads: that's a crack. Three cracks end the run.
 Every bank makes the ring faster and the gold thinner. Banking green is safe, but it resets
 your chain — which is the whole tension.
 
-Two modes: a **daily run** seeded from the date (everyone gets the same sequence, so scores
-are comparable) and **endless**.
+Two modes: a **daily run** and **endless**.
+
+The daily run picks one of five modifiers from the UTC date — STEADY, TEMPO, HAIRLINE, DRIFT,
+SURGE — and each one changes the actual shape of the run: how fast the ring charges, how thick
+the gold starts, how far it moves between rounds, how quickly it tightens. Everyone in the
+world gets the same modifier on the same day, so scores are comparable. Endless always runs the
+neutral curve, so it stays a clean skill ladder.
 
 ## Running it
 
@@ -53,9 +58,10 @@ milliseconds. A phone that drops frames still judges the release the player actu
 
 ## Difficulty
 
-The gold window is expressed in **time**, not arc width: 345 ms on the first round, decaying
-to a floor of 86 ms. Below roughly 85 ms no player can anticipate it and the game stops being
-fair, so the floor is enforced by a test.
+The gold window is expressed in **time**, not arc width — a thin band on a slow ring is fair,
+the same band on a fast ring is not. The floor is 85 ms and it is derived from the ring's
+current speed, so it holds by construction on every modifier rather than relying on the
+multipliers happening to cancel out. A test checks all six curves.
 
 Constants were chosen with `test/tune.mjs` over 2,500 simulated runs per skill profile:
 

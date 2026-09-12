@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createRun, judge, roundSpec, scoreFor, CRACKS } from '../src/game.js';
+import { createRun, judge, roundSpec, scoreFor, CRACKS, MODIFIERS, NEUTRAL, modifierFor } from '../src/game.js';
 import { mulberry32, hashString, todayKey, dayNumber } from '../src/rng.js';
 
 const seq = (seed) => mulberry32(hashString(seed));
@@ -109,11 +109,36 @@ test('abort annulla la presa senza penalità', () => {
   assert.equal(run.state.round, 0, 'il round non avanza');
 });
 
-test('la finestra d oro non scende mai sotto gli 83 ms', () => {
-  const r = seq('curve');
-  let min = Infinity;
-  for (let n = 0; n < 200; n++) min = Math.min(min, roundSpec(n, r).windowMs);
-  assert.ok(min >= 85, `finestra minima ${min}ms: sotto la soglia di lealtà`);
+test('la finestra d oro non scende sotto gli 85 ms su NESSUN modificatore', () => {
+  for (const mod of [NEUTRAL, ...MODIFIERS]) {
+    const r = seq('curve-' + mod.key);
+    let min = Infinity;
+    for (let n = 0; n < 300; n++) min = Math.min(min, roundSpec(n, r, mod).windowMs);
+    assert.ok(min >= 85, `${mod.name}: finestra minima ${min}ms, sotto la soglia di lealtà`);
+  }
+});
+
+test('ogni giorno riceve un modificatore, stabile e uguale per tutti', () => {
+  const a = modifierFor('2026-09-12');
+  assert.equal(a.key, modifierFor('2026-09-12').key, 'lo stesso giorno dà lo stesso modificatore');
+  const keys = new Set();
+  for (let d = 1; d <= 31; d++) keys.add(modifierFor(`2026-10-${String(d).padStart(2, '0')}`).key);
+  assert.ok(keys.size >= 3, `in un mese devono comparire più modificatori, visti: ${keys.size}`);
+});
+
+test('i modificatori cambiano davvero la corsa, non solo la posizione dell oro', () => {
+  const curves = MODIFIERS.map((m) => {
+    const r = seq('same-seed');
+    return Array.from({ length: 15 }, (_, n) => roundSpec(n, r, m).windowMs).join(',');
+  });
+  assert.equal(new Set(curves).size, MODIFIERS.length, 'due modificatori producono la stessa curva');
+});
+
+test('la chiave del giorno è in UTC, non in ora locale', () => {
+  // 23:30 a Roma del 12 è ancora il 12 in UTC (21:30Z); 01:30 del 13 a Roma è il 12 in UTC (23:30Z).
+  assert.equal(todayKey(new Date('2026-09-12T21:30:00Z')), '2026-09-12');
+  assert.equal(todayKey(new Date('2026-09-12T23:30:00Z')), '2026-09-12');
+  assert.equal(todayKey(new Date('2026-09-13T00:10:00Z')), '2026-09-13');
 });
 
 test('la difficoltà cresce in modo monotono e poi si stabilizza', () => {
@@ -134,7 +159,7 @@ test('il tasto premuto due volte non riavvia la carica', () => {
 });
 
 test('la chiave del giorno e il numero di corsa sono coerenti', () => {
-  assert.equal(todayKey(new Date(2026, 8, 12)), '2026-09-12');
+  assert.equal(todayKey(new Date('2026-09-12T12:00:00Z')), '2026-09-12');
   assert.equal(dayNumber('2026-09-12'), 1);
   assert.equal(dayNumber('2026-09-13'), 2);
   assert.equal(dayNumber('2026-10-12'), 31);

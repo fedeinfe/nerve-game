@@ -12,7 +12,7 @@ const BAL = {
   goldJitter: 0.18,
   goldWidth0: 0.190,
   goldWidthDecay: 0.0048,
-  goldWidthFloor: 0.095,
+  minWindowMs: 85,
   rate0: 0.55,
   rateGrowth: 0.033,
   rateCap: 1.10,
@@ -22,10 +22,33 @@ const BAL = {
   flinchMult: 0.4,
 };
 
-export function roundSpec(n, rnd) {
-  const rate = Math.min(BAL.rateCap, BAL.rate0 + n * BAL.rateGrowth);
-  const width = Math.max(BAL.goldWidthFloor, BAL.goldWidth0 - n * BAL.goldWidthDecay);
-  const goldStart = BAL.goldMin + rnd() * BAL.goldJitter;
+
+// Il modificatore del giorno è ciò che rende la corsa quotidiana una sfida davvero diversa,
+// non lo stesso gioco con una banda spostata. Cambia il ritmo dell'anello, lo spessore
+// dell'oro, quanto l'oro si sposta fra un round e l'altro, e quanto in fretta stringe.
+export const MODIFIERS = [
+  { key: 'steady',   name: 'STEADY',   blurb: 'Wide gold, patient ring.',      rateMul: 0.92, widthMul: 1.15, jitterMul: 0.7, growthMul: 0.85 },
+  { key: 'tempo',    name: 'TEMPO',    blurb: 'Fast ring, forgiving gold.',    rateMul: 1.18, widthMul: 1.18, jitterMul: 1.0, growthMul: 1.0 },
+  { key: 'hairline', name: 'HAIRLINE', blurb: 'Thin gold, slow ring.',         rateMul: 0.82, widthMul: 0.80, jitterMul: 1.0, growthMul: 0.9 },
+  { key: 'drift',    name: 'DRIFT',    blurb: 'The gold will not sit still.',  rateMul: 1.0,  widthMul: 1.05, jitterMul: 2.0, growthMul: 1.0 },
+  { key: 'surge',    name: 'SURGE',    blurb: 'Starts kind. Does not stay.',   rateMul: 0.90, widthMul: 1.10, jitterMul: 1.0, growthMul: 1.55 },
+];
+
+export const NEUTRAL = { key: 'endless', name: 'ENDLESS', blurb: '', rateMul: 1, widthMul: 1, jitterMul: 1, growthMul: 1 };
+
+export function modifierFor(dayKey) {
+  return MODIFIERS[hashString('mod-' + dayKey) % MODIFIERS.length];
+}
+
+export function roundSpec(n, rnd, mod = NEUTRAL) {
+  const rate = Math.min(BAL.rateCap * mod.rateMul, (BAL.rate0 + n * BAL.rateGrowth * mod.growthMul) * mod.rateMul);
+  // Il pavimento è sul TEMPO, non sulla larghezza dell'arco: una banda stretta su un anello
+  // lento è leale, la stessa banda su un anello veloce non lo è. Legarlo al tempo lo garantisce
+  // per costruzione su ogni modificatore, invece di sperare che i moltiplicatori si compensino.
+  const minWidth = (BAL.minWindowMs / 1000) * rate;
+  const width = Math.max(minWidth, (BAL.goldWidth0 - n * BAL.goldWidthDecay * mod.growthMul) * mod.widthMul);
+  const spread = Math.min(0.30, BAL.goldJitter * mod.jitterMul);
+  const goldStart = BAL.goldMin + rnd() * spread;
   return {
     rate,
     safeStart: BAL.safeStart,
@@ -47,11 +70,13 @@ export function scoreFor(verdict, charge, chain) {
   return Math.round(BAL.base * charge * mult * chain);
 }
 
-export function createRun({ seed, mode, now = 0 }) {
+export function createRun({ seed, mode, modifier = NEUTRAL }) {
   const rnd = mulberry32(hashString(String(seed)));
+  const mod = modifier;
   const state = {
     mode,
     seed,
+    modifier: mod,
     round: 0,
     score: 0,
     chain: 1,
@@ -65,14 +90,14 @@ export function createRun({ seed, mode, now = 0 }) {
     spec: null,
     lastWindowMs: 0,
   };
-  state.spec = roundSpec(0, rnd);
+  state.spec = roundSpec(0, rnd, mod);
   let holdStart = 0;
 
   function nextRound() {
     state.round += 1;
     state.charge = 0;
     state.holding = false;
-    state.spec = roundSpec(state.round, rnd);
+    state.spec = roundSpec(state.round, rnd, mod);
   }
 
   // La carica è una funzione dell'orologio, non del numero di frame disegnati:

@@ -1,4 +1,4 @@
-import { createRun } from '../src/game.js';
+import { createRun, MODIFIERS, NEUTRAL } from '../src/game.js';
 
 // Giocatore simulato: mira al centro dell'oro con un errore gaussiano sul tempo di rilascio.
 // sigmaMs = precisione motoria. 55ms ~ giocatore medio, 30ms ~ esperto, 90ms ~ distratto.
@@ -9,8 +9,8 @@ function gauss(rand) {
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
 }
 
-function simulate({ sigmaMs, greed, seed, rand }) {
-  const run = createRun({ seed, mode: 'endless' });
+function simulate({ sigmaMs, greed, seed, rand, mod = NEUTRAL }) {
+  const run = createRun({ seed, mode: 'endless', modifier: mod });
   let t = 0, wall = 0;
   let guard = 0;
   while (!run.state.over && guard++ < 500) {
@@ -42,11 +42,13 @@ const profiles = [
 
 const pct = (arr, p) => arr.slice().sort((a, b) => a - b)[Math.floor(arr.length * p)];
 
+const MOD = process.argv[2] ? [NEUTRAL, ...MODIFIERS].find(m => m.key === process.argv[2]) : NEUTRAL;
+console.log('== modificatore:', MOD.name, '==');
 console.log('profilo                              durata mediana   p10–p90        round  punteggio med.  catena max');
 for (const pr of profiles) {
   const rand = mulberry(12345);
   const runs = [];
-  for (let i = 0; i < 3000; i++) runs.push(simulate({ ...pr, seed: 'sim-' + i, rand }));
+  for (let i = 0; i < 3000; i++) runs.push(simulate({ ...pr, seed: 'sim-' + i, rand, mod: MOD }));
   const secs = runs.map(r => r.seconds);
   const scores = runs.map(r => r.score);
   const chains = runs.map(r => r.bestChain);

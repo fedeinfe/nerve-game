@@ -1,4 +1,4 @@
-import { createRun, CRACKS } from './game.js';
+import { createRun, CRACKS, modifierFor, NEUTRAL } from './game.js';
 import { createRenderer } from './render.js';
 import { createLoop } from './loop.js';
 import { todayKey, dayNumber } from './rng.js';
@@ -16,7 +16,8 @@ const el = {
   title: $('screen-title'), how: $('screen-how'), over: $('screen-over'),
   overScore: $('over-score'), overMode: $('over-mode'), overVerdict: $('over-verdict'),
   tape: $('over-tape'), statChain: $('stat-chain'), statGolds: $('stat-golds'), statBest: $('stat-best'),
-  bestLine: $('best-line'), dailyLabel: $('daily-label'), sound: $('btn-sound'), share: $('btn-share'),
+  bestLine: $('best-line'), dailyLabel: $('daily-label'), dailyBlurb: $('daily-blurb'),
+  sound: $('btn-sound'), share: $('btn-share'),
 };
 
 let run = null;
@@ -25,6 +26,7 @@ let justResolved = 0;
 
 const DAY = todayKey();
 const DAYN = dayNumber(DAY);
+const TODAY_MOD = modifierFor(DAY);
 
 function bestKey(m) { return m === 'daily' ? `nerve.best.daily.${DAY}` : 'nerve.best.endless'; }
 const getBest = (m) => load(bestKey(m), 0);
@@ -38,7 +40,8 @@ function show(which) {
 }
 
 function refreshTitle() {
-  el.dailyLabel.textContent = `Run #${DAYN}`;
+  el.dailyLabel.textContent = `#${DAYN} · ${TODAY_MOD.name}`;
+  if (el.dailyBlurb) el.dailyBlurb.textContent = TODAY_MOD.blurb;
   const bd = getBest('daily');
   const at = getAllTime();
   el.bestLine.textContent = bd ? `TODAY ${bd.toLocaleString('en-US')} · BEST ${at.toLocaleString('en-US')}`
@@ -55,12 +58,12 @@ function start(m) {
   mode = m;
   sfx.unlock();
   const seed = m === 'daily' ? `daily-${DAY}` : `e-${Math.floor(Math.random() * 1e9)}`;
-  run = createRun({ seed, mode: m });
+  run = createRun({ seed, mode: m, modifier: m === 'daily' ? TODAY_MOD : NEUTRAL });
   justResolved = 0;
   show(null);
   syncHud();
   setPrompt('HOLD ANYWHERE');
-  track('game_start', { mode: m, day: DAYN });
+  track('game_start', { mode: m, day: DAYN, modifier: m === 'daily' ? TODAY_MOD.key : 'neutral' });
   loop.start();
 }
 
@@ -120,7 +123,7 @@ async function endRun() {
   if (s.score > getAllTime()) save('nerve.best.alltime', s.score);
 
   el.overScore.textContent = s.score.toLocaleString('en-US');
-  el.overMode.textContent = mode === 'daily' ? `DAILY RUN #${DAYN}` : 'ENDLESS';
+  el.overMode.textContent = mode === 'daily' ? `DAILY #${DAYN} · ${TODAY_MOD.name}` : 'ENDLESS';
   el.overVerdict.textContent = verdictLine(s);
   el.statChain.textContent = `×${s.bestChain}`;
   el.statGolds.textContent = String(s.golds);
@@ -195,7 +198,7 @@ document.addEventListener('visibilitychange', () => {
 const EMOJI = { g: '🟡', s: '🟢', x: '🔴' };
 function shareText(s) {
   const tape = s.tape.slice(0, 24).map((t) => EMOJI[t]).join('');
-  const head = mode === 'daily' ? `NERVE — daily run #${DAYN}` : 'NERVE — endless';
+  const head = mode === 'daily' ? `NERVE — daily #${DAYN} · ${TODAY_MOD.name}` : 'NERVE — endless';
   return `${head}\n${s.score.toLocaleString('en-US')} · best chain ×${s.bestChain}\n${tape}\n${location.origin}${location.pathname}`;
 }
 
